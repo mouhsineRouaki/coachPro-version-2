@@ -80,3 +80,19 @@ document.querySelector('.signin-form form').addEventListener('submit', function 
     }
     this.submit();
 });
+
+function showToast(message) {
+  let toastMessage = document.getElementById("toastMessage")
+  let toast = document.getElementById("toast")
+  toastMessage.textContent = message;
+  toast.classList.remove('hidden');
+  setTimeout(() => toast.classList.add('hidden'), 3000);
+}
+
+
+const urlParams = new URLSearchParams(window.location.search);
+const message = urlParams.get('message');
+if(message != "" || message != null){
+    showToast(message)
+}
+

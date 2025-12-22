@@ -1,61 +1,79 @@
-<?php 
-class Utilisateur{
-    private $id = null;
-    private $nom;
-    private $prenom;
-    private $email;
-    private $password;
-    private $role;
-    private $telephone;
+<?php
+require_once __DIR__ . "./database.php";
+
+class Utilisateur {
+
+    private ?int $id = null;
+    private string $nom;
+    private string $prenom;
+    private string $email;
+    private string $password;
+    private string $telephone;
+    private string $role;
+    private string $image;
+
     private $db = Database::getInstance()->getConnection();
-    public function __construct($nom, $prenom, $email, $password , $role,$telephone){
+
+    public function __construct(
+        string $nom,
+        string $prenom,
+        string $email,
+        string $password,
+        string $telephone,
+        string $role,
+        ?string $image = null
+    ) {
         $this->nom = $nom;
-        $this->prenom= $prenom ;
+        $this->prenom = $prenom;
         $this->email = $email;
-        $this->password = password_hash($password) ;
+        $this->password = password_hash($password, PASSWORD_DEFAULT);
+        $this->telephone = $telephone;
         $this->role = $role;
-        $this->telephone= $telephone;
-    }
-    public function __toString(){
-        return $this->nom . " ".$this->prenom;
+        $this->image = $image;
     }
 
-    public function getNom(){
-        return $this->nom;
-    }
-    public function getPrenom(){
-        return $this->prenom;
-    }
-    public function getEmail(){
-        return $this->email;
-    }
-    public function getTelephone(){
-        return $this->telephone;
-    }
-    public function getRole(){
-        return $this->role;
-    }
+    public function register(): array {
 
-    public function InscriptionUser(){
-
-    }
-    public function getIdUser(){
-        $stmt = $this->db->prepare("select * from utilisateur where email = :email");
-        $stmt->bindParam(':email',$this->email , PDO::PARAM_STR);
-        if($stmt->execute()){
-            $this->id= $stmt->fetch(PDO::FETCH_ASSOC)["id_utilisateur"];
+        $check = $this->db->prepare("SELECT id_utilisateur FROM utilisateur WHERE email = ?");
+        $check->execute([$this->email]);
+        if ($check->fetch()) {
+            return [
+                "success" => false,
+                "message" => "Email deja utilise"
+            ];
         }
+        $stmt = $this->db->prepare("INSERT INTO utilisateur(nom, prenom, email, mot_de_pass, telephone, role, img_utilisateur, date_creation) VALUES (?, ?, ?, ?, ?, ?, ?, NOW())");
+        $stmt->execute([$this->nom,$this->prenom,$this->email,$this->password,$this->telephone,$this->role,$this->image]);
+        $this->id = $this->db->lastInsertId();
+        return [
+            "success" => true,
+            "message" => "Inscription réussie",
+            "id_utilisateur" => $this->id
+        ];
     }
 
-    public function insererUser(){
-        $stmt = $this->db->prepare("insert into utilisateur(nom, prenom , email , telephone, role, mot_de_pass , date_creation,iscritComplet) values (:nom,:prenom,:email,:telephone,:role,,:password,NOW(),true)");
-        $stmt->bindParam(':nom',$this->nom , PDO::PARAM_STR);
-        $stmt->bindParam(':prenom',$this->prenom , PDO::PARAM_STR);
-        $stmt->bindParam(':email',$this->email , PDO::PARAM_STR);
-        $stmt->bindParam(':telephone',$this->telephone , PDO::PARAM_STR);
-        $stmt->bindParam(':role',$this->role , PDO::PARAM_STR);
-        $stmt->bindParam(':mot_de_pass',$this->password , PDO::PARAM_STR);
-        $stmt->execute();
+    public static function login(string $email, string $password): array {
+
+        $stmt = $db->prepare("SELECT * FROM utilisateur WHERE email = ?");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch();
+
+        if (!$user || !password_verify($password, $user['mot_de_pass'])) {
+            return [
+                "success" => false,
+                "message" => "Email ou mot de passe incorrect"
+            ];
+        }
+
+        session_start();
+        $_SESSION['user_id'] = $user['id_utilisateur'];
+        $_SESSION['role'] = $user['role'];
+
+        return [
+            "success" => true,
+            "message" => "Connexion réussie",
+            "user" => $user
+        ];
     }
-    
 }
+
