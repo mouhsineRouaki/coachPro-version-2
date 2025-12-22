@@ -1,5 +1,5 @@
-Drop DATABASE coaching_platform ; 
-CREATE DATABASE IF NOT EXISTS coaching_platform;
+Drop DATABASE if EXISTS coaching_platformv2 ; 
+CREATE DATABASE IF NOT EXISTS coaching_platformv2;
 USE coaching_platform;
 
 CREATE TABLE utilisateur (

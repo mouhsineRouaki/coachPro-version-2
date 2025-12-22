@@ -1,23 +1,9 @@
-<?php
-require "../../php/Coach/functionCoach.php";
-require "../../php/authentification/checkConnecter.php";
+<?php 
+require "../../classeses/utilisateur.php";
 
-$coach = getCoach();
-$user = getUtilisateur();
+$user = Utilisateur::getUserConnected();
 
-
-$id_coach = $coach["id_coach"];
-
-$pending = getEnAttenteReservations($id_coach);
-$today = getTodaySessions($id_coach);
-$tomorrow = getTomorrowSessions($id_coach);
-$totalSportifs = getTotalSportifs($id_coach);
-
-$nextSession = getNextSession($id_coach);
-$history = getSessionHistory($id_coach);
 ?>
-
-
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -103,10 +89,10 @@ $history = getSessionHistory($id_coach);
             <span class="sr-only">Menu Utilisateur</span>
             <div class="hidden md:flex md:flex-col md:items-end md:leading-tight">
               <span class="font-semibold"><?= $user["nom"] ?> <?= $user["prenom"] ?></span>
-              <span class="text-sm text-gray-600">Coach Professionnel</span>
+              <span class="text-sm text-gray-600"><?= $user["role"] ?> Professionnel</span>
             </div>
             <span class="h-12 w-12 ml-2 sm:ml-3 mr-2 bg-gray-100 rounded-full overflow-hidden">
-              <img src="<?= $coach["coach_img"] ?>" alt="photo de profil" class="h-full w-full object-cover">
+              <img src="<?= $user["img_utilisateur"] ?>" alt="photo de profil" class="h-full w-full object-cover">
             </span>
             <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor"
               class="hidden sm:block h-6 w-6 text-gray-300">
@@ -203,7 +189,7 @@ $history = getSessionHistory($id_coach);
             </div>
             <div>
               <span class="block text-2xl font-bold"><?= $totalSportifs ?></span>
-              <span class="block text-gray-500">Total sportifs coachés</span>
+              <span class="block text-gray-500">Total seance confirme</span>
             </div>
           </div>
         </section>

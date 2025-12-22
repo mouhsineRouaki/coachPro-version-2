@@ -1,41 +1,29 @@
 <?php 
-class Database{
-    private static $instance = null ;
-    private $pdo ;
-    private function __construct($dbname , $user, $pass){
-        try{
-            $this->pdo = new PDO($dbname,$user,$pass);
-            $this->pdo->setAttribute(PDO::ATTR_ERRMODE , PDO::ERRMODE_EXCEPTION);
-        }catch(PDOException $pdoE){
-            error_log("database connection error :".$pdoE->getMessage());
-            throw new Exception("Database connection failed");
 
-        }
+class Database {
+    private static ?Database $instance = null;
+    private PDO $pdo;
+
+    private function __construct() {
+        $this->pdo = new PDO(
+            "mysql:host=localhost;dbname=coaching_platformv2;charset=utf8",
+            "root",
+            "mouhsinerouaki",
+            [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+            ]
+        );
     }
 
-    public function getInstance($dsn= null , $user = null , $pass = null ){
-        if(self::$instance === null){
-            $dsn = $dsn ??  'mysql:host=localhost;dbname=coaching_platform';
-            $user = $user ?? 'root';
-            $pass = $pass ?? 'mouhsinerouaki';
-            self::$instance = new Database($dsn ,$user,$pass );
+    public static function getInstance(): Database {
+        if (self::$instance === null) {
+            self::$instance = new Database();
         }
-        return self::$instance ;
+        return self::$instance;
     }
-    
-    public function getConnection(){
+
+    public function getConnection(): PDO {
         return $this->pdo;
     }
-
-
-
-
-
-
-
-
-
-
-
-
 }

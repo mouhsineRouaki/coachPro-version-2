@@ -1,7 +1,7 @@
 const nameRegex = /^[A-Za-zÀ-ÿ\s]{2,}$/;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const phoneRegex = /^(?:\+212|0)(6|7)\d{8}$/;
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+const passwordRegex = /^[A-Za-zÀ-ÿ\s]{2,}$/;
 const signupBtn = document.getElementById("signup-btn");
 const signinBtn = document.getElementById("signin-btn");
 const mainContainer = document.querySelector(".container");
@@ -56,10 +56,6 @@ document.querySelector('.signup-form form').addEventListener('submit', function 
         return;
     }
 
-    if (password !== confirmPassword) {
-        alert("Les mots de passe ne correspondent pas");
-        return;
-    }
     this.submit();
 });
 
