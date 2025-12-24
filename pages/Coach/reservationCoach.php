@@ -1,9 +1,3 @@
-<?php
-session_start();
-require "../../php/authentification/checkConnecter.php"; 
-?>
-
-
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -174,7 +168,7 @@ require "../../php/authentification/checkConnecter.php";
 
 <script>
   let reservation=[];
-  fetch("../../php/Coach/getReservationsCoach.php")
+  fetch("../../php/coach/getReservationsCoach.php")
       .then(res => res.json())
       .then(data => {
         reservation= data.map(r => ({
@@ -182,11 +176,12 @@ require "../../php/authentification/checkConnecter.php";
           coach_name: r.nom + " " + r.prenom,
           coach_image: r.coach_img || "https://via.placeholder.com/150",
           sport: r.nom_sport,
-          date_seance: r.date_seance,
+          date_seance: r.date,
           heure_debut: r.heure_debut,
           heure_fin: r.heure_fin,
           status: r.status,
-          tel: r.telephone
+          tel: r.telephone,
+          id_disponibilite :r.id_disponibilite
         }));
         console.log(reservation)
         displayReservations();
@@ -204,7 +199,6 @@ require "../../php/authentification/checkConnecter.php";
     return badges[status] || '';
   }
 
-  // Fonction pour créer une carte de réservation
   function createReservationCard(reservationO) {
     const isPending = reservationO.status === 'en_attente';
     const isConfirmed = reservationO.status === 'confirmee';
@@ -299,11 +293,9 @@ require "../../php/authentification/checkConnecter.php";
       reservation.filter(r => r.status === 'annulee').length;
   }
 
-  // Fonction pour filtrer les réservations
   function filterReservations(filter) {
     currentFilter = filter;
     
-    // Mise à jour des boutons actifs
     document.querySelectorAll('.filter-btn').forEach(btn => {
       btn.classList.remove('active', 'bg-purple-600', 'text-white');
       btn.classList.add('bg-gray-100', 'text-gray-700');
@@ -320,38 +312,38 @@ require "../../php/authentification/checkConnecter.php";
 
 
   function confirmReservation(id) {
-  fetch('../../php/Coach/confirmReservation.php', {
+  let reservationO =reservation.find(r => r.id_reservation === id);
+  console.log(reservationO)
+  fetch('../../php/coach/confirmReservation.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `id_reservation=${id}`
+    body: `id_reservation=${id}&id_disponibilite=${reservationO.id_disponibilite}`
   })
   .then(res => res.json())
   .then(data => {
     if (data.success) {
-      // Mettre à jour localement pour affichage immédiat
       const resObj = reservation.find(r => r.id_reservation === id);
       if (resObj) resObj.status = 'confirmee';
       displayReservations();
-      showToast(data.message);
+      showToast(data.success);
     } else {
-      showToast('Erreur : ' + data.message);
+      showToast('Erreur : ' + data.success);
     }
   })
-  .catch(err => showToast('Erreur : ' + err.message));
 }
 
 
 
  function cancelReservation(id) {
-  fetch('../../php/Coach/annuleeReservation.php', {
+  let reservationO =reservation.find(r => r.id_reservation === id);
+  fetch('../../php/coach/annuleeReservation.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `id_reservation=${id}`
+    body: `id_reservation=${id}&id_disponibilite=${reservationO.id_disponibilite}`
   })
   .then(res => res.json())
   .then(data => {
     if (data.success) {
-      // Mettre à jour localement pour affichage immédiat
       const resObj = reservation.find(r => r.id_reservation === id);
       if (resObj) resObj.status = 'annulee';
       displayReservations();
@@ -360,10 +352,8 @@ require "../../php/authentification/checkConnecter.php";
       showToast('Erreur : ' + data.message);
     }
   })
-  .catch(err => showToast('Erreur : ' + err.message));
 }
 
-  // Fonction pour afficher un toast
   function showToast(message) {
     const toast = document.getElementById('toast');
     const toastMessage = document.getElementById('toastMessage');
@@ -374,7 +364,6 @@ require "../../php/authentification/checkConnecter.php";
     }, 3000);
   }
 
-  // Style pour les boutons de filtre
   const style = document.createElement('style');
   style.textContent = `
     .filter-btn {
@@ -391,7 +380,6 @@ require "../../php/authentification/checkConnecter.php";
   `;
   document.head.appendChild(style);
 
-  // Affichage initial
   displayReservations();
 </script>
 

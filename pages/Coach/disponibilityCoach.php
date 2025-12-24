@@ -1,7 +1,3 @@
-<?php
-session_start();
-require "../../php/authentification/checkConnecter.php"; 
-?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -255,7 +251,7 @@ function createSlotCard(slot) {
       <div>
         <p class="text-sm text-gray-500 mb-1">${formatDate(slot.date)}</p>
         <p class="text-lg font-bold text-gray-800">
-          ${slot.startTime} - ${slot.endTime}
+          ${slot.heure_debut} - ${slot.heure_fin}
         </p>
       </div>
       <span class="${statusColor} px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
@@ -268,11 +264,11 @@ function createSlotCard(slot) {
 
     <div class="flex gap-2">
       ${slot.isReserved == 0 ? `
-        <button onclick="openEditModal(${slot.id})"
+        <button onclick="openEditModal(${slot.id_disponibilite})"
           class="flex-1 px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition">
           Modifier
         </button>
-        <button onclick="deleteSlot(${slot.id})"
+        <button onclick="deleteSlot(${slot.id_disponibilite})"
           class="flex-1 px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition">
           Supprimer
         </button>
@@ -319,7 +315,7 @@ function filterSlots(filter) {
 }
 
 function loadSlots() {
-  fetch('../../php/Coach/getDisponibilites.php')
+  fetch('../../php/coach/getDisponibilites.php')
     .then(res => res.json())
     .then(data => {
       availabilitySlots = data;
@@ -338,13 +334,13 @@ function closeAddModal() {
 }
 
 function openEditModal(id) {
-  const slot = availabilitySlots.find(s => s.id == id);
+  const slot = availabilitySlots.find(s => s.id_disponibilite == id);
   if (!slot) return;
 
-  editId.value = slot.id;
+  editId.value = slot.id_disponibilite;
   editDate.value = slot.date;
-  editStartTime.value = slot.startTime;
-  editEndTime.value = slot.endTime;
+  editStartTime.value = slot.heure_debut;
+  editEndTime.value = slot.heure_fin;
   editModal.classList.remove('hidden');
 }
 
@@ -356,7 +352,7 @@ function closeEditModal() {
 function addSlot(e) {
   e.preventDefault();
 
-  fetch('../../php/Coach/addDisponibilite.php', {
+  fetch('../../php/coach/addDisponibilite.php', {
     method: 'POST',
     headers: {'Content-Type':'application/x-www-form-urlencoded'},
     body: `date=${newDate.value}&startTime=${newStartTime.value}&endTime=${newEndTime.value}`
@@ -365,8 +361,8 @@ function addSlot(e) {
   .then(data => {
     if(data.success){
       closeAddModal();
-    loadSlots();
-    showToast(data.message);
+      loadSlots();
+      showToast(data.message);
     }else{
       showToast(data.message);
     }
@@ -376,8 +372,9 @@ function addSlot(e) {
 
 function updateSlot(e) {
   e.preventDefault();
+  console.log(editDate.value)
 
-  fetch('../../php/Coach/updateDisponibilite.php', {
+  fetch('../../php/coach/updateDisponibilite.php', {
     method: 'POST',
     headers: {'Content-Type':'application/x-www-form-urlencoded'},
     body: `id=${editId.value}&date=${editDate.value}&startTime=${editStartTime.value}&endTime=${editEndTime.value}`
@@ -387,6 +384,7 @@ function updateSlot(e) {
     if(data.success){
       closeAddModal();
     loadSlots();
+    closeEditModal();
     showToast(data.message);
     }else{
       showToast(data.message);

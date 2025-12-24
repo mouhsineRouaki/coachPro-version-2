@@ -14,15 +14,7 @@ class Utilisateur {
 
     private PDO $db;
 
-    public function __construct(
-        string $nom,
-        string $prenom,
-        string $email,
-        string $password,
-        string $telephone,
-        string $role,
-        ?string $image = null
-    ) {
+    public function __construct(string $nom,string $prenom,string $email,string $password,string $telephone,string $role,?string $image = null) {
         $this->db =  Database::getInstance()->getConnection();
         $this->nom = $nom;
         $this->prenom = $prenom;
@@ -131,7 +123,6 @@ class Utilisateur {
         ];
     }
     public static function getUserConnected(){
-        session_start();
         if(!isset($_SESSION["user_id"])){
             return null;
         }
@@ -142,7 +133,6 @@ class Utilisateur {
 
     }
     public static function lougoutUser(){
-        session_start();
         session_destroy();
     }
     public function updateInfoUser(): bool {

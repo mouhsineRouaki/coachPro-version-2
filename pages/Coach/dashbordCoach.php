@@ -1,8 +1,12 @@
 <?php 
-require "../../classeses/utilisateur.php";
+session_start();
+require "../../classeses/coach.php";
 
-$user = Utilisateur::getUserConnected();
-
+$userConnected = Utilisateur::getUserConnected();
+$coachConnected = Coach::getConnectedCoach();
+$coach = new Coach($userConnected,$coachConnected);
+$nextSession = $coach->getNextSportifSeance();
+$history = $coach->getHistoriqueReservation();
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -88,11 +92,11 @@ $user = Utilisateur::getUserConnected();
           <button class="inline-flex items-center p-2 hover:bg-gray-100 focus:bg-gray-100 rounded-lg">
             <span class="sr-only">Menu Utilisateur</span>
             <div class="hidden md:flex md:flex-col md:items-end md:leading-tight">
-              <span class="font-semibold"><?= $user["nom"] ?> <?= $user["prenom"] ?></span>
-              <span class="text-sm text-gray-600"><?= $user["role"] ?> Professionnel</span>
+              <span class="font-semibold"><?= $userConnected["nom"] ?> <?= $userConnected["prenom"] ?></span>
+              <span class="text-sm text-gray-600"><?= $userConnected["role"] ?> Professionnel</span>
             </div>
             <span class="h-12 w-12 ml-2 sm:ml-3 mr-2 bg-gray-100 rounded-full overflow-hidden">
-              <img src="<?= $user["img_utilisateur"] ?>" alt="photo de profil" class="h-full w-full object-cover">
+              <img src="<?= $userConnected["img_utilisateur"] ?>" alt="photo de profil" class="h-full w-full object-cover">
             </span>
             <svg aria-hidden="true" viewBox="0 0 20 20" fill="currentColor"
               class="hidden sm:block h-6 w-6 text-gray-300">
@@ -146,7 +150,7 @@ $user = Utilisateur::getUserConnected();
               </svg>
             </div>
             <div>
-              <span class="block text-2xl font-bold"><?= $pending ?></span>
+              <span class="block text-2xl font-bold"><?= $coach->getNombreReservationByStatus("en_attente") ?></span>
               <span class="block text-gray-500">Demandes en attente</span>
             </div>
           </div>
@@ -160,8 +164,8 @@ $user = Utilisateur::getUserConnected();
               </svg>
             </div>
             <div>
-              <span class="block text-2xl font-bold"><?= $today ?></span>
-              <span class="block text-gray-500">Séances aujourd'hui</span>
+              <span class="block text-2xl font-bold"><?= $coach->getNombreReservationByStatus("confirmee") ?></span>
+              <span class="block text-gray-500">demande confirme </span>
             </div>
           </div>
 
@@ -174,8 +178,8 @@ $user = Utilisateur::getUserConnected();
               </svg>
             </div>
             <div>
-              <span class="block text-2xl font-bold"><?= $tomorrow ?></span>
-              <span class="block text-gray-500">Séances demain</span>
+              <span class="block text-2xl font-bold"><?= $coach->getNombreReservationByStatus("annulee") ?></span>
+              <span class="block text-gray-500">dommande refuser </span>
             </div>
           </div>
 
@@ -188,21 +192,20 @@ $user = Utilisateur::getUserConnected();
               </svg>
             </div>
             <div>
-              <span class="block text-2xl font-bold"><?= $totalSportifs ?></span>
+              <span class="block text-2xl font-bold"><?= $coach->getNombreReservationByStatus("annulee") ?></span>
               <span class="block text-gray-500">Total seance confirme</span>
             </div>
           </div>
         </section>
 
         <section class="grid md:grid-cols-2 xl:grid-cols-4 xl:grid-rows-3 xl:grid-flow-col gap-6">
-          <!-- Prochaine Séance -->
           <div class="flex flex-col md:col-span-2 md:row-span-2 bg-white shadow rounded-lg">
             <div class="px-6 py-5 font-semibold border-b border-gray-100">Prochaine Séance</div>
             <div class="p-6 flex-grow">
               <?php if ($nextSession): ?>
                 <div class="flex items-center mb-4">
                   <div class="h-16 w-16 mr-4 bg-gray-100 rounded-full overflow-hidden">
-                    <img src="<?= $nextSession['sportif_img'] ?>" alt="Sportif">
+                    <img src="<?= $nextSession['img_utilisateur'] ?>" alt="Sportif">
                   </div>
                   <div class="flex-grow">
                     <h3><?= $nextSession['prenom'] . ' ' . $nextSession['nom'] ?></h3>
@@ -252,15 +255,15 @@ $user = Utilisateur::getUserConnected();
                 </tr>
               </thead>
               <tbody class="bg-white divide-y divide-gray-200">
-                <?php while ($row = $history->fetch_assoc()): ?>
+                <?php foreach ($history as $row){ ?>
                   <tr>
                     <td><?= $row['prenom'] . ' ' . $row['nom'] ?></td>
                     <td><?= $row['nom_sport'] ?></td>
-                    <td><?= $row['date_seance'] ?></td>
+                    <td><?= $row['date'] ?></td>
                     <td><?= $row['heure_debut'] . ' - ' . $row['heure_fin'] ?></td>
                     <td><?= ucfirst($row['status']) ?></td>
                   </tr>
-                <?php endwhile; ?>
+                <?php } ?>
 
               </tbody>
             </table>

@@ -85,8 +85,10 @@ CREATE TABLE reservation (
     status VARCHAR(50),
     date_reservation DATETIME,
     id_sport INT,
+    id_disponobilite INT,
     FOREIGN KEY (id_sportif) REFERENCES sportif(id_sportif),
     FOREIGN KEY (id_coach) REFERENCES coach(id_coach),
-    FOREIGN KEY (id_sport) REFERENCES sport(id_sport)
+    FOREIGN KEY (id_sport) REFERENCES sport(id_sport),
+    FOREIGN KEY (id_disponibilite) REFERENCES disponibilite(id_disponibilite)
 );
 
