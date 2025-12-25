@@ -1,10 +1,14 @@
-<?php
-require "../../php/Coach/functionCoach.php";
-require "../../php/authentification/checkConnecter.php";
+<?php 
+session_start();
+require "../../classeses/coach.php";
+require "../../classeses/sport.php";
 
-$user = getUtilisateur();
-$coach = getCoach();
-$sports = getSports();
+$userConnected = Utilisateur::getUserConnected();
+$coachConnected = Coach::getConnectedCoach();
+$coach = new Coach($userConnected,$coachConnected);
+$nextSession = $coach->getNextSportifSeance();
+$sports = Sport::getNonLierSportCoachConnected();
+
 ?>
 
 <!DOCTYPE html>
@@ -90,9 +94,9 @@ $sports = getSports();
             <input type="file" id="imageUpload" accept="image/*" class="hidden">
           </div>
           <div>
-            <h2 class="text-2xl font-bold text-gray-800"><?= $user["nom"];?> <?= $user["prenom"];?></h2>
+            <h2 class="text-2xl font-bold text-gray-800"><?= $userConnected["nom"];?> <?= $userConnected["prenom"];?></h2>
             <p class="text-gray-600">Coach Professionnel</p>
-            <p class="text-sm text-gray-500">Membre depuis le <?= $user["dateU"];?></p>
+            <p class="text-sm text-gray-500">Membre depuis le <?= $userConnected["date_creation"];?></p>
           </div>
         </div>
       </div>
@@ -100,16 +104,16 @@ $sports = getSports();
       <!-- Onglets -->
       <div class="bg-white rounded-lg shadow-md mb-6">
         <div class="flex border-b">
-          <button onclick="switchTab('info')" id="tab-info" class="px-6 py-3 font-semibold text-purple-600 border-b-2 border-purple-600">
+          <button onclick="switchTab('info');" id="tab-info" class="px-6 py-3 font-semibold text-purple-600 border-b-2 border-purple-600">
             Informations personnelles
           </button>
-          <button onclick="switchTab('bio')" id="tab-bio" class="px-6 py-3 font-semibold text-gray-600 hover:text-purple-600">
+          <button onclick="switchTab('bio');" id="tab-bio" class="px-6 py-3 font-semibold text-gray-600 hover:text-purple-600">
             Biographie
           </button>
-          <button onclick="switchTab('sports')" id="tab-sports" class="px-6 py-3 font-semibold text-gray-600 hover:text-purple-600">
+          <button onclick="switchTab('sports');" id="tab-sports" class="px-6 py-3 font-semibold text-gray-600 hover:text-purple-600">
             Sports & Compétences
           </button>
-          <button onclick="switchTab('experience')" id="tab-experience" class="px-6 py-3 font-semibold text-gray-600 hover:text-purple-600">
+          <button onclick="switchTab('experience');" id="tab-experience" class="px-6 py-3 font-semibold text-gray-600 hover:text-purple-600">
             Expériences
           </button>
         </div>
@@ -125,29 +129,29 @@ $sports = getSports();
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
-                <input type="text" name="nom" id="nom" value="<?= $user["nom"] ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                <input type="text" name="nom" id="nom" value="<?= $userConnected["nom"] ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
-                <input type="text" id="prenom" name="prenom" value="<?= $user["prenom"] ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                <input type="text" id="prenom" name="prenom" value="<?= $userConnected["prenom"] ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
               </div>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-                <input type="email" id="email" name="email" value="<?= $user["email"] ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                <input type="email" id="email" name="email" value="<?= $userConnected["email"] ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
-                <input type="tel" name="tel" id="tel" value="<?= $user["telephone"] ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
+                <input type="tel" name="tel" id="tel" value="<?= $userConnected["telephone"] ?>" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
               </div>
             </div>
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Niveau</label>
               <select id="niveau" name="niveau" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent">
-                <option value="<?= $coach["niveau"] ?>" selected><?= $coach["niveau"] ?></option>
+                <option value="<?= $coachConnected["niveau"] ?>" selected><?= $coachConnected["niveau"] ?></option>
                 <option value="Débutant">Débutant</option>
                 <option value="Intermédiaire">Intermédiaire</option>
                 <option value="Avancé" >Avancé</option>
@@ -174,7 +178,7 @@ $sports = getSports();
           <form id="bioForm" class="space-y-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Biographie</label>
-              <textarea id="biographie" name="biographie" rows="8" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Parlez de votre parcours, vos spécialités, votre approche..."><?= $coach["biographie"] ?></textarea>
+              <textarea id="biographie" name="biographie" rows="8" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent" placeholder="Parlez de votre parcours, vos spécialités, votre approche..."><?= $coachConnected["biographie"] ?></textarea>
             </div>
             
             <div class="flex justify-end pt-4">
@@ -223,7 +227,7 @@ $sports = getSports();
 
     <footer class="bg-gray-900 text-white py-6 mt-10">
       <div class="max-w-6xl mx-auto px-4 text-center text-sm">
-        © 2025 Plateforme Coach & Sportif — Tous droits réservés
+        © 2025 Plateforme coach$coachConnected & Sportif — Tous droits réservés
       </div>
     </footer>
   </div>
@@ -268,7 +272,7 @@ $sports = getSports();
         <select id="sportName" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
           <option value="">Sélectionner un sport</option>
           <?php foreach($sports as $sport){?>
-            <option value="<?= $sport['id_sport'] ?>"><?= $sport['nom_sport'] ?></option>
+            <option value="<?= $sport["id_sport"] ?>"><?= $sport["nom_sport"] ?></option>
           <?php }?>
         </select>
       </div>
@@ -337,7 +341,7 @@ $sports = getSports();
 
 
 function apiRequest(data) {
-  return fetch('../../php/Coach/profileCoach.php', {
+  return fetch('../../php/coach/profileCoach.php', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded'
@@ -608,9 +612,7 @@ function deleteDisponibilite(id) {
 function loadProfile() {
   apiRequest({ action: 'get' }).then(result => {
     if (!result.success) return;
-
     const d = result.data;
-
     nom.value = d.nom;
     prenom.value = d.prenom;
     email.value = d.email;
@@ -622,7 +624,6 @@ function loadProfile() {
 function loadSports() {
   apiRequest({ action: 'getSportsCoach' })
     .then(result => {
-      if (!result.success) return alert(result.message);
       sports = result.data;
       renderSports();
     });
@@ -630,7 +631,6 @@ function loadSports() {
 function loadExperiences() {
   apiRequest({ action: 'getExperiences' })
     .then(result => {
-      if (!result.success) return alert(result.message);
       experiences = result.data;
       renderExperiences();
     });

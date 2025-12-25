@@ -233,6 +233,8 @@ function formatDate(dateStr) {
 }
 
 function createSlotCard(slot) {
+  console.log(slot.lier)
+
   const statusColor = slot.isReserved == 1
     ? 'bg-green-100 text-green-800'
     : 'bg-purple-100 text-purple-800';
@@ -244,6 +246,9 @@ function createSlotCard(slot) {
          d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />`
     : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />`;
+
+  const canEdit = slot.isReserved == 0;
+  const canDelete = slot.isReserved == 0 && !slot.lier;
 
   return `
   <div class="bg-white rounded-lg shadow hover:shadow-lg transition p-6">
@@ -263,23 +268,38 @@ function createSlotCard(slot) {
     </div>
 
     <div class="flex gap-2">
-      ${slot.isReserved == 0 ? `
-        <button onclick="openEditModal(${slot.id_disponibilite})"
-          class="flex-1 px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition">
-          Modifier
-        </button>
-        <button onclick="deleteSlot(${slot.id_disponibilite})"
-          class="flex-1 px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition">
-          Supprimer
-        </button>
-      ` : `
-        <div class="flex-1 text-center text-sm text-gray-500 py-2">
-          Ce créneau est réservé et ne peut pas être modifié
-        </div>
-      `}
+      ${
+        canEdit
+        ? `
+          <button onclick="openEditModal(${slot.id_disponibilite})"
+            class="flex-1 px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition">
+            Modifier
+          </button>
+          ${
+            canDelete
+            ? `
+              <button onclick="deleteSlot(${slot.id_disponibilite})"
+                class="flex-1 px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition">
+                Supprimer
+              </button>
+            `
+            : `
+              <div class="flex-1 text-center text-xs text-gray-400 py-2">
+                Lié à une réservation
+              </div>
+            `
+          }
+        `
+        : `
+          <div class="flex-1 text-center text-sm text-gray-500 py-2">
+            Ce créneau est réservé et ne peut pas être modifié
+          </div>
+        `
+      }
     </div>
   </div>`;
 }
+
 
 function displaySlots() {
   const grid = document.getElementById('availabilityGrid');
@@ -364,7 +384,7 @@ function addSlot(e) {
       loadSlots();
       showToast(data.message);
     }else{
-      showToast(data.message);
+      showToast("erreur de suppression ");
     }
     
   });
@@ -395,16 +415,19 @@ function updateSlot(e) {
 
 
 function deleteSlot(id) {
+  console.log(id)
   if (!confirm('Supprimer ce créneau ?')) return;
 
-  fetch('../../php/Coach/deleteDisponibilite.php', {
+  fetch('../../php/coach/deleteDisponibilite.php', {
     method: 'POST',
     headers: {'Content-Type':'application/x-www-form-urlencoded'},
     body: `id=${id}`
   })
-  .then(() => {
-    loadSlots();
-    showToast('Créneau supprimé');
+  .then(data => {
+    if(data.success){
+      loadSlots();
+      showToast(data.message);
+    }
   });
 }
 

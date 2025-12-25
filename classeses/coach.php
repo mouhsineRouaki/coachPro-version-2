@@ -9,7 +9,7 @@ class Coach extends Utilisateur{
     private $annee_exp= null ;
     private PDO $db; 
     
-    public function __construct($user, $coach ){
+    public function __construct($user, $coach){
         parent::__construct($user["nom"] , $user["prenom"] , $user["email"] , $user["mot_de_pass"], $user["telephone"] , $user["role"] , $user["img_utilisateur"] );
         $this->db = Database::getInstance()->getConnection();
         $this->id_coach = $coach["id_coach"];
@@ -27,7 +27,12 @@ class Coach extends Utilisateur{
         }
         return null ; 
     }
-
+    public function __set($name, $value){
+        return $name = $value;
+    }
+    public function __get($name){
+        return $name;
+    }
 
     public function getNextSportifSeance(){
         $stmt = $this->db->prepare("select u.nom , u.prenom , u.img_utilisateur , d.date , s.nom_sport , d.heure_debut , d.heure_fin from reservation r
@@ -98,6 +103,42 @@ class Coach extends Utilisateur{
         return $stmt2->execute([$id_disponibilite]);
 
 }
+    public function updateInfo(){
+        parent::updateInfoUser();
+        $stmt = $this->db->prepare("update coach set niveau = ? , biographie = ? where id_coach = ?");
+        if($stmt->execute([$this->niveau,$this->biographie,$this->id_coach])){
+            return ['success'=>true , 'message'=>"bien update"];
+        }else{
+            return ['success'=>true , 'message'=>"ne pas update"];
+        }
+    }
+    public function addSport($id_sport){
+        $stmt = $this->db->prepare("insert into coach_sport values (?,?)");
+        if($stmt->execute([$this->id_coach,$id_sport])){
+            return ['success'=>true , 'message'=>"bien ajouer le sport"];
+        }
+    }
+    public function addExperience($domaine , $duree , $dateDebut , $dateFin){
+        $stmt = $this->db->prepare("insert into experiences values (null , ?,?,?,?,?)");
+        if($stmt->execute([$this->id_coach,$dateDebut, $dateFin ,$duree, $domaine])){
+            return ['success'=>true , 'message'=>"bien ajouter lexperience "];
+        }
+    }
+    public function deleteSport($id_sport){
+        $stmt = $this->db->prepare("delete from coach_sport where id_sport = ? , id_coach = ? ");
+        if($stmt->execute([$this->id_coach,$id_sport])){
+            return ['success'=>true , 'message'=>"bien supprimer le sport "];
+        }
+    }
+    public function deleteExperience($id_sport){
+        $stmt = $this->db->prepare("delete from experiences  where id_coach = ? ");
+        if($stmt->execute([$this->id_coach])){
+            return ['success'=>true , 'message'=>"bien supprimer"];
+        }
+    }
+
+    
+
 
 
 

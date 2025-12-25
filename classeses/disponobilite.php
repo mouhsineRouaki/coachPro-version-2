@@ -68,17 +68,31 @@ class Disponibilite{
             return ['success' => false,'message' => 'Créneau déjà existant ou chevauchement détecté'];
         }  
     }
-    public function supprimerDisponibilite(){
-        $stmtCheck  = $this->db->prepare("delete from disponibilite where id_disponibilite = ? ");
-        if($stmtCheck->execute([$this->id_disponibilite])){
-                return ['success' => true,'message' => 'Disponibilité supprimer avec succès'];
-        }  
+    public static function supprimerDisponibilite($id_disponibilite){
+        $db = Database::getInstance()->getConnection();
+        $stmtCheck  = $db->prepare("delete from disponibilite where id_disponibilite = ? ");
+        try {
+            $stmtCheck->execute([$id_disponibilite]);
+            return ['success'=>false,'message'=>"suppression avec succes "];
+        } catch (PDOException $e) {
+            return ['success'=>false,'message'=>$e->getMessage()];
+        }
     }
     public static function getDisponibiliteById($id_disponibilite){
         $db = Database::getInstance()->getConnection();
-        $stmtCheck  = $db->prepare("SELECT * from disponibilite where id_disponibilite = ? ");
+        $lier = Disponibilite::checkDisponibiliteById($id_disponibilite);
+        $stmtCheck  = $db->prepare("SELECT d.* ,".$lier." as lier from disponibilite d where id_disponibilite = ? ");
         $stmtCheck->execute([$id_disponibilite]);
         return  $stmtCheck->fetch(PDO::FETCH_ASSOC);
+    } 
+     public static function checkDisponibiliteById($id_disponibilite){
+        $db = Database::getInstance()->getConnection();
+        $stmtCheck  = $db->prepare("SELECT * from reservation where id_disponibilite = ? ");
+        $stmtCheck->execute([$id_disponibilite]);
+        if($stmtCheck->fetch(PDO::FETCH_ASSOC)){
+            return true; 
+        }
+        return false ;
     } 
 
 }

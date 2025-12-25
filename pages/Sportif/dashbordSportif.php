@@ -1,10 +1,4 @@
-<?php
-require_once "../../php/Sportif/functionSportif.php";
-require "../../php/authentification/checkConnecter.php"; 
 
-$user = getUtilisateur();
-$confirmeProchineSeance = confirmeProchaineSeance();
-?>
 
 <!DOCTYPE html>
 <html lang="fr">

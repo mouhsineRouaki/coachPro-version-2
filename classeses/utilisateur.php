@@ -24,6 +24,12 @@ class Utilisateur {
         $this->role = $role;
         $this->image = $image;
     }
+    public function __set($name, $value){
+        return $name = $value;
+    }
+    public function __get($name){
+        return $name;
+    }
     public function getId(): ?int {
         return $this->id;
     }

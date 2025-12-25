@@ -2,7 +2,7 @@
 require __DIR__."/utilisateur.php";
 require_once __DIR__ . "/database.php";
 
-class Coach extends Utilisateur{
+class Sportif extends Utilisateur{
     private ?int$id_sportif = null ;
     private ?string $objectif = null ;
     private ?string$niveau= null ;
@@ -15,6 +15,12 @@ class Coach extends Utilisateur{
         $this->objectif = $objectif ;
         $this->niveau = $niveau;
     }
+    public function __get($name){
+        return $name ;
+    }
+    public function __set($name, $value){
+        $name = $value ;
+    }
     public static function getConnectedSportif(){
         session_start();
         $db = Database::getInstance()->getConnection();
@@ -23,5 +29,14 @@ class Coach extends Utilisateur{
             return $stmt->fetch(PDO::FETCH_ASSOC);
         }
         return null ; 
+    }
+    public function getNombreReservationByStatus($status){
+        $stmt = $this->db->prepare("select count(*) as total from reservation r 
+        INNER JOIN sportif s on r.id_coach = s.id_coach
+        Where status = ?
+        ");
+        $stmt->execute([$status]);
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result["total"];
     }
 }

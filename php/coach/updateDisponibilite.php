@@ -9,8 +9,6 @@ $date  = $_POST['date'] ?? null;
 $start = $_POST['startTime'] ?? null;
 $end   = $_POST['endTime'] ?? null;
 
-$heure_debut = $start.":00";
-$heure_fin = $end.":00";
 
 if (!$id || !$id_coach || !$date || !$start || !$end) {
     echo json_encode([
@@ -30,8 +28,8 @@ if ($start < "08:00" || $end > "18:00" || $start >= $end) {
 $disponibiliteGet = Disponibilite::getDisponibiliteById($id);
 $disponibilites = new Disponibilite($disponibiliteGet['id_disponibilite'],$disponibiliteGet['id_coach'] , $disponibiliteGet['date'] , $disponibiliteGet['heure_debut'],$disponibiliteGet['heure_fin']);
 $disponibilites->setDate($date);
-$disponibilites->setHeureDebut($heure_debut);
-$disponibilites->setHeureFin($heure_fin);
+$disponibilites->setHeureDebut($start);
+$disponibilites->setHeureFin($end);
 $update = $disponibilites->modifierDisponibilite();
 echo json_encode($update);
 
