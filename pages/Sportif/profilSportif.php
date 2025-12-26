@@ -1,10 +1,12 @@
 <?php 
-require "../../php/Sportif/functionSportif.php"; 
-require "../../php/authentification/checkConnecter.php"; 
-$user = getUtilisateur();
-$sportif = getSportif();
+session_start();
+require "../../classeses/sportif.php";
+require "../../classeses/coach.php";
+require "../../classeses/sport.php";
 
-
+$userConnected = Utilisateur::getUserConnected();
+$sportifConnected = Sportif::getConnectedSportif();
+$sportif = new Sportif($userConnected,$sportifConnected);
 ?>
 
 <!DOCTYPE html>

@@ -214,7 +214,7 @@
   <script>
     let reservations = [];
 
-    fetch("../../php/Coach/getReservationsCoach.php")
+    fetch("../../php/sportif/getReservations.php")
       .then(res => res.json())
       .then(data => {
         reservations = data.map(r => ({
@@ -227,6 +227,7 @@
           heure_fin: r.heure_fin,
           status: r.status
         }));
+        console.log(reservations)
         displayReservations(reservations);
       });
 
@@ -372,7 +373,7 @@
     function cancelReservation(id) {
       if (!confirm("Annuler cette réservation ?")) return;
 
-      fetch("../../php/Sportif/annulerReservation.php", {
+      fetch("../../php/sportif/annulerReservation.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({ id_reservation: id })

@@ -101,5 +101,14 @@ class Disponibilite{
             WHERE id_disponibilite = ?");
         $stmt->execute([$id_disponibilite]);
     }
+    public static function getDisponibiliteByIdReservation($id_reservation){
+        $db = Database::getInstance()->getConnection();
+        $stmt  = $db->prepare("SELECT * from disponibilite d
+        INNER JOIN reservation r on d.id_disponibilite = r.id_disponibilite
+        where r.id_reservation = ?
+        ");
+        $stmt->execute([$id_reservation]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
 }
