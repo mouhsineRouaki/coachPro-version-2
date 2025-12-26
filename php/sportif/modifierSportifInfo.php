@@ -25,7 +25,7 @@ $sportif->UpdateInfoSportif();
 
 
 if ($sportif->updateInfoUser()) {
-    echo  $sportif;
+ header("Location: ../../page/sportif/profilSportif.php");
 } else {
     echo "Erreur lors de la mise à jour";
 }

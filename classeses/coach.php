@@ -10,7 +10,7 @@ class Coach extends Utilisateur{
     private PDO $db; 
     
     public function __construct($user, $coach){
-        parent::__construct($user["nom"] , $user["prenom"] , $user["email"] , $user["mot_de_pass"], $user["telephone"] , $user["role"] , $user["img_utilisateur"] );
+        parent::__construct($user["nom"] , $user["prenom"] , $user["email"] , $user["mot_de_pass"], $user["telephone"] , $user["role"] , $user["img_utilisateur"],$user["id_utilisateur"] );
         $this->db = Database::getInstance()->getConnection();
         $this->id_coach = $coach["id_coach"];
         $this->biographie = $coach["biographie"] ;

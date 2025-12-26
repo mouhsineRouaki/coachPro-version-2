@@ -155,5 +155,49 @@ class Utilisateur {
         $stmt = $this->db->prepare("UPDATE utilisateur SET nom = ?, prenom = ?, email = ?, telephone = ?, img_utilisateur = ? WHERE id_utilisateur = ?");
         return $stmt->execute([$this->nom, $this->prenom, $this->email, $this->telephone, $this->image, $id]);
     }
+    public function changePassword(string $currentPassword, string $newPassword, string $confirmPassword): array
+{
+    if ($newPassword !== $confirmPassword) {
+        return [
+            "success" => false,
+            "message" => "Les mots de passe ne correspondent pas"
+        ];
+    }
+    $stmt = $this->db->prepare(
+        "SELECT mot_de_pass FROM utilisateur WHERE id_utilisateur = ?"
+    );
+    $stmt->execute([$this->id]);
+    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if (!$user) {
+        return [
+            "success" => false,
+            "message" => "Utilisateur introuvable"
+        ];
+    }
+    if (!password_verify($currentPassword, $user["mot_de_pass"])) {
+        return [
+            "success" => false,
+            "message" => "Mot de passe actuel incorrect"
+        ];
+    }
+
+    $newHash = password_hash($newPassword, PASSWORD_DEFAULT);
+    $update = $this->db->prepare(
+        "UPDATE utilisateur SET mot_de_pass = ? WHERE id_utilisateur = ?"
+    );
+
+    if ($update->execute([$newHash, $this->id])) {
+        return [
+            "success" => true,
+            "message" => "Mot de passe modifié avec succès"
+        ];
+    }
+    return [
+        "success" => false,
+        "message" => "Erreur lors du changement du mot de passe"
+    ];
+}
+
 }
 
