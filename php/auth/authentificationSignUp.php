@@ -10,7 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_POST['password'],
         $_POST['telephone'],
         $_POST['role'],
-        $_POST['urlImage']
+        $_POST['urlImage'],null
     );
 
     $result = $user->register();

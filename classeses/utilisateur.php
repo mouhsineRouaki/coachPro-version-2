@@ -3,7 +3,7 @@ require_once __DIR__ . "/database.php";
 
 class Utilisateur {
 
-    protected int $id ;
+    protected ?int $id ;
     protected string $nom;
     protected string $prenom;
     protected string $email;
@@ -14,7 +14,7 @@ class Utilisateur {
 
     private PDO $db;
 
-    public function __construct(string $nom,string $prenom,string $email,string $password,string $telephone,string $role, $image, $id) {
+    public function __construct(string $nom,string $prenom,string $email,string $password,string $telephone,string $role, $image, $id=null) {
         $this->db =  Database::getInstance()->getConnection();
         $this->nom = $nom;
         $this->prenom = $prenom;
