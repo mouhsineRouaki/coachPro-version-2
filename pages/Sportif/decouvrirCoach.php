@@ -1,6 +1,5 @@
 <?php
-require_once "../../php/Sportif/functionSportif.php";
-require "../../php/authentification/checkConnecter.php"; 
+require_once "../../components/card.php";
 ?>
 
 
@@ -65,8 +64,7 @@ require "../../php/authentification/checkConnecter.php";
                 class="p-3 hover:text-gray-400 hover:bg-gray-700 focus:text-gray-400 focus:bg-gray-700 rounded-lg">
                 <span class="sr-only">Paramètres</span>
                 <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-6 w-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31 2.37 2.37a1.724 1.724 0 002.572 1.065.996.608 2.296.07 2.572-1.065z" />
+
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
@@ -145,47 +143,6 @@ require "../../php/authentification/checkConnecter.php";
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">Discipline</label>
-        <select id="disciplineFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
-          <option value="">Toutes les disciplines</option>
-          <option value="football">Football</option>
-          <option value="preparation">Préparation Physique</option>
-          <option value="natation">Natation</option>
-          <option value="tennis">Tennis</option>
-          <option value="fitness">Fitness</option>
-          <option value="yoga">Yoga</option>
-          <option value="boxe">Boxe</option>
-        </select>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">Disponibilité</label>
-        <select id="availabilityFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
-          <option value="">Toutes les dates</option>
-          <option value="today">Aujourd'hui</option>
-          <option value="week">Cette semaine</option>
-          <option value="month">Ce mois</option>
-        </select>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium text-gray-700 mb-2">Expérience</label>
-        <select id="experienceFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500">
-          <option value="">Toute expérience</option>
-          <option value="1-5">1-5 ans</option>
-          <option value="6-10">6-10 ans</option>
-          <option value="10+">10+ ans</option>
-        </select>
-      </div>
-
-      <div class="flex items-end">
-        <button id="resetBtn" class="w-full px-4 py-2 bg-gray-600 text-white font-semibold rounded-lg hover:bg-gray-700 transition">
-          Réinitialiser
-        </button>
-      </div>
-    </div>
   </div>
 </section>
 
@@ -195,7 +152,6 @@ require "../../php/authentification/checkConnecter.php";
   </div>
 
   <div id="coachGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10 w">
-    <?php getTousLesCoaches()?>
   </div>
 
   <!-- Message si aucun résultat -->
@@ -217,14 +173,11 @@ require "../../php/authentification/checkConnecter.php";
 </div>
 
 <script>
-  
-  function updateGrid() {
-    const recherche = document.getElementById('searchInput').value;
-    const sport = document.getElementById('disciplineFilter').value;
-    const experience = document.getElementById('experienceFilter').value;
-    const date = document.getElementById('availabilityFilter').value;
 
-    const url = `../../php/Sportif/filterCoach.php?recherche=${recherche}&sport=${sport}&experience=${experience}&date=${date}`;
+  
+function updateGrid(recherche) {
+
+    const url = `../../php/sportif/filterCoach.php?query=${recherche}`;
 
     fetch(url)
         .then(res => res.text())
@@ -232,26 +185,14 @@ require "../../php/authentification/checkConnecter.php";
             document.getElementById('coachGrid').innerHTML = html;
         });
 }
+  updateGrid("");
 
 document.getElementById('searchInput').addEventListener('input',()=>{
-  if(document.getElementById('searchInput').value == ""){
-    document.getElementById('coachGrid').innerHTML = `<?php getTousLesCoaches(); ?>`
-  }else{
-    updateGrid()
-  }
+  const recherche = document.getElementById('searchInput').value;
+    updateGrid(recherche)
 
 });
-document.getElementById('disciplineFilter').addEventListener('change', updateGrid);
-document.getElementById('availabilityFilter').addEventListener('change', updateGrid);
-document.getElementById('experienceFilter').addEventListener('change', updateGrid);
 
-document.getElementById("resetBtn").addEventListener("click" , ()=>{
-  document.getElementById('searchInput').value = "";
-  document.getElementById('disciplineFilter').value = "";
-  document.getElementById('availabilityFilter').value = "";
-  document.getElementById('experienceFilter').value = "";
-  document.getElementById('coachGrid').innerHTML = `<?php getTousLesCoaches(); ?>`
-})
 
 </script>
 

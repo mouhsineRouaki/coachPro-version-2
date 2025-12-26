@@ -50,5 +50,19 @@ class Reservation{
         );
         return $stmt2->execute([$id_disponibilite]);
     }
+    public static function insererReservation($id_coach,$id_sportif,$id_disponibilite,$id_sport,$status){
+        $db = Database::getInstance()->getConnection();
+        $stmt  = $db->prepare("INSERT INTO reservation 
+            (id_sportif, id_coach, id_sport,id_disponibilite,status,date_reservation)
+            VALUES (?,?,?,?,?,NOW())");
+        $stmt->execute([$id_sportif,$id_coach,$id_sport,$id_disponibilite,$status]);
+    }
+    public static function getReservationBySportif($id_sportif){
+        $db = Database::getInstance()->getConnection();
+        $stmt  = $db->prepare("INSERT INTO reservation 
+            (id_sportif, id_coach, id_sport,id_disponibilite,status,date_reservation)
+            VALUES (?,?,?,?,?,NOW())");
+        $stmt->execute([$id_sportif]);
+    }
 
 }

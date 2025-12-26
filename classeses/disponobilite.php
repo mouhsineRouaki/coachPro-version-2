@@ -94,5 +94,12 @@ class Disponibilite{
         }
         return false ;
     } 
+    public static function reserverDisponibiliteByid($id_disponibilite){
+        $db = Database::getInstance()->getConnection();
+        $stmt  = $db->prepare("UPDATE disponibilite
+            SET isReserved = 1 
+            WHERE id_disponibilite = ?");
+        $stmt->execute([$id_disponibilite]);
+    }
 
 }
