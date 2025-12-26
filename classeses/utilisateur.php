@@ -3,18 +3,18 @@ require_once __DIR__ . "/database.php";
 
 class Utilisateur {
 
-    private ?int $id = null;
-    private string $nom;
-    private string $prenom;
-    private string $email;
-    private string $password;
-    private string $telephone;
-    private string $role;
-    private string $image;
+    protected int $id ;
+    protected string $nom;
+    protected string $prenom;
+    protected string $email;
+    protected string $password;
+    protected string $telephone;
+    protected string $role;
+    protected string $image;
 
     private PDO $db;
 
-    public function __construct(string $nom,string $prenom,string $email,string $password,string $telephone,string $role,?string $image = null) {
+    public function __construct(string $nom,string $prenom,string $email,string $password,string $telephone,string $role, $image, $id) {
         $this->db =  Database::getInstance()->getConnection();
         $this->nom = $nom;
         $this->prenom = $prenom;
@@ -23,12 +23,13 @@ class Utilisateur {
         $this->telephone = $telephone;
         $this->role = $role;
         $this->image = $image;
+        $this->id = $_SESSION["user_id"];
     }
     public function __set($name, $value){
-        return $name = $value;
+        $this->$name = $value;
     }
     public function __get($name){
-        return $name;
+        return $this->$name;
     }
     public function getId(): ?int {
         return $this->id;
@@ -149,6 +150,10 @@ class Utilisateur {
     public function deleteUser(): bool {
         $stmt = $this->db->prepare("DELETE FROM utilisateur WHERE id_utilisateur = ?");
         return $stmt->execute([$this->id]);
+    }
+    public function updateInfoUserByIdUser($id): bool {
+        $stmt = $this->db->prepare("UPDATE utilisateur SET nom = ?, prenom = ?, email = ?, telephone = ?, img_utilisateur = ? WHERE id_utilisateur = ?");
+        return $stmt->execute([$this->nom, $this->prenom, $this->email, $this->telephone, $this->image, $id]);
     }
 }
 

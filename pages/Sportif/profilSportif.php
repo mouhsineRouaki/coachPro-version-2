@@ -59,10 +59,7 @@ $sportif = new Sportif($userConnected,$sportifConnected);
             <a href="profilSportif.php"
                 class="inline-flex items-center justify-center py-3 hover:text-gray-400 hover:bg-gray-700 focus:text-gray-400 focus:bg-gray-700 rounded-lg">
                 <span class="sr-only">Mon Profil</span>
-                <svg aria-hidden="true" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="h-6 w-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
+
             </a>
         </nav>
         <div class="inline-flex items-center justify-center h-20 w-20 border-t border-gray-700">
@@ -92,7 +89,7 @@ $sportif = new Sportif($userConnected,$sportifConnected);
       <div class="bg-white rounded-xl shadow-md p-6 mb-6">
         <div class="flex items-center space-x-6">
           <div class="relative">
-            <img id="profileImage" src="<?= $sportif["sportif_img"] ?>" 
+            <img id="profileImage" src="<?= $userConnected["img_utilisateur"] ?>" 
                  alt="Photo de profil" 
                  class="w-32 h-32 rounded-full object-cover border-4 border-purple-100">
             <button id="changePhotoBtn" class="absolute bottom-0 right-0 bg-purple-600 text-white p-2 rounded-full hover:bg-purple-700 transition">
@@ -103,9 +100,9 @@ $sportif = new Sportif($userConnected,$sportifConnected);
             </button>
           </div>
           <div>
-            <h2 id="displayName" class="text-2xl font-bold text-gray-800"><?= $user['nom']; $user['prenom'] ?></h2>
-            <p class="text-purple-600 font-semibold"><?= $user['role'];?>  Amateur</p>
-            <p class="text-sm text-gray-500 mt-1">Membre depuis <?= $user['dateU'];?> </p>
+            <h2 id="displayName" class="text-2xl font-bold text-gray-800"><?= $userConnected['nom']; $userConnected['prenom'] ?></h2>
+            <p class="text-purple-600 font-semibold"><?= $userConnected['role'];?>  Amateur</p>
+            <p class="text-sm text-gray-500 mt-1">Membre depuis <?= $userConnected['date_creation'];?> </p>
           </div>
         </div>
       </div>
@@ -122,31 +119,31 @@ $sportif = new Sportif($userConnected,$sportifConnected);
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Nom</label>
-              <input type="text" id="nom" name="nom" value="<?= $user["nom"] ?>" disabled
+              <input type="text" id="nom" name="nom" value="<?= $userConnected["nom"] ?>" disabled
                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100">
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
-              <input type="text" id="prenom" name="prenom" value="<?= $user["prenom"] ?>" disabled
+              <input type="text" id="prenom" name="prenom" value="<?= $userConnected["prenom"] ?>" disabled
                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100">
             </div>
           </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Email</label>
-            <input type="email" id="email" name="email" value="<?= $user["email"] ?>" disabled
+            <input type="email" id="email" name="email" value="<?= $userConnected["email"] ?>" disabled
                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100">
           </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Téléphone</label>
-            <input type="tel" id="telephone" name="telephone" value="<?= $user["telephone"] ?>" disabled
+            <input type="tel" id="telephone" name="telephone" value="<?= $userConnected["telephone"] ?>" disabled
                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100">
           </div>
 
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
-            <input type="text" id="role" name="url_image" value="<?= $sportif["sportif_img"] ?>" disabled
+            <input type="text" id="role" name="url_image" value="<?= $userConnected["img_utilisateur"] ?>" disabled
                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100">
           </div>
 
@@ -169,7 +166,7 @@ $sportif = new Sportif($userConnected,$sportifConnected);
           </button>
         </div>
 
-        <form id="sportForm" class="space-y-4" method="POST" action="../../php/Sportif/modificationSportifinfo2.php">
+        <form id="sportForm" class="space-y-4" method="POST" action="../../php/sportif/modificationSportifinfo2.php">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Niveau</label>
             <select id="niveau" disabled name="niveau" 
@@ -184,7 +181,7 @@ $sportif = new Sportif($userConnected,$sportifConnected);
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-2">Objectif</label>
             <textarea id="objectif" rows="4" disabled name="objectif" 
-                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100"><?= $sportif["objectif"] ?></textarea>
+                      class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 disabled:bg-gray-100"><?= $sportifConnected["objectif"] ?></textarea>
           </div>
 
           <div id="sportActions" class="hidden flex space-x-3">
